@@ -74,6 +74,32 @@ executables:
     - aoc20
     other-modules:
     - Paths_aoc20
+  day3:
+    main:                Day3Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is Day3Main
+    - -O2
+    dependencies:
+    - aoc20
+    other-modules:
+    - Paths_aoc20
+  day4:
+    main:                Day4Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is Day4Main
+    - -O2
+    dependencies:
+    - aoc20
+    other-modules:
+    - Paths_aoc20
 
 tests:
   aoc20-test:
