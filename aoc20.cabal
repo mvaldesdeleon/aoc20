@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9f226449fed605338e5907fdd73b61bb87c7c19f3346a1ca36626f0b533ba121
+-- hash: 5f981fa18e4ee3f313f0ba22690ba291946164b4e96347e2d9eb5bc33dbc5afa
 
 name:           aoc20
 version:        0.1.0.0
@@ -25,6 +25,8 @@ data-files:
     inputs/day-2.txt
     inputs/day-3.txt
     inputs/day-4.txt
+    inputs/day-5.txt
+    inputs/day-6.txt
 
 source-repository head
   type: git
@@ -36,6 +38,8 @@ library
       Day2
       Day3
       Day4
+      Day5
+      Day6
   other-modules:
       Paths_aoc20
   autogen-modules:
@@ -53,6 +57,7 @@ library
     , monad-loops
     , mtl
     , parsec
+    , split
     , vector
   default-language: Haskell2010
 
@@ -74,6 +79,7 @@ executable day1
     , monad-loops
     , mtl
     , parsec
+    , split
     , vector
   default-language: Haskell2010
 
@@ -95,6 +101,7 @@ executable day2
     , monad-loops
     , mtl
     , parsec
+    , split
     , vector
   default-language: Haskell2010
 
@@ -116,6 +123,7 @@ executable day3
     , monad-loops
     , mtl
     , parsec
+    , split
     , vector
   default-language: Haskell2010
 
@@ -137,6 +145,51 @@ executable day4
     , monad-loops
     , mtl
     , parsec
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day5
+  main-is: Day5Main.hs
+  other-modules:
+      Paths_aoc20
+  hs-source-dirs:
+      app
+  ghc-options: -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -main-is Day5Main -O2
+  build-depends:
+      ListZipper
+    , ansi-terminal
+    , aoc20
+    , base >=4.7 && <5
+    , containers
+    , lens
+    , listsafe
+    , monad-loops
+    , mtl
+    , parsec
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day6
+  main-is: Day6Main.hs
+  other-modules:
+      Paths_aoc20
+  hs-source-dirs:
+      app
+  ghc-options: -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -main-is Day6Main -O2
+  build-depends:
+      ListZipper
+    , ansi-terminal
+    , aoc20
+    , base >=4.7 && <5
+    , containers
+    , lens
+    , listsafe
+    , monad-loops
+    , mtl
+    , parsec
+    , split
     , vector
   default-language: Haskell2010
 
@@ -159,5 +212,6 @@ test-suite aoc20-test
     , monad-loops
     , mtl
     , parsec
+    , split
     , vector
   default-language: Haskell2010
