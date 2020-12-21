@@ -16,10 +16,15 @@ data Instruction = Instruction
   { iOpCode :: OpCode,
     iArg :: Integer
   }
-  deriving (Show)
+
+instance Show Instruction where
+  show Instruction {iOpCode = opCode, iArg = arg} = show opCode ++ " " ++ show arg
 
 newtype Program = Program (V.Vector Instruction)
   deriving (Show)
+
+mkProgram :: [Instruction] -> Program
+mkProgram = Program . V.fromList
 
 data Computer = Computer
   { cProgram :: Program,
@@ -31,11 +36,23 @@ data Computer = Computer
 mkComputer :: Program -> Computer
 mkComputer prg = Computer {cProgram = prg, cIp = 0, cAcc = 0}
 
+isHalt :: Computer -> Bool
+isHalt Computer {cProgram = Program insts, cIp = ip} = V.length insts == fromInteger ip
+
 runStep :: Computer -> Computer
 runStep computer@Computer {cProgram = Program insts, cIp = ip} =
   case insts V.!? fromInteger ip of
     Just inst -> runInstruction inst computer
     Nothing -> error $ "Instruction pointer out of bounds: " ++ show ip
+
+runStepMaybe :: Computer -> Maybe Computer
+runStepMaybe computer =
+  if isHalt computer
+    then Nothing
+    else Just $ runStep computer
+
+iterateMaybe :: (a -> Maybe a) -> a -> [a]
+iterateMaybe f a = a : maybe [] (iterateMaybe f) (f a)
 
 runInstruction :: Instruction -> Computer -> Computer
 runInstruction Instruction {iOpCode = opCode, iArg = arg} computer@Computer {cIp = ip, cAcc = acc} =
@@ -66,7 +83,7 @@ parseInstruction = Instruction <$> parseOpCode <* P.char ' ' <*> parseNumber
 parseProgram :: P.Parsec String () Program
 parseProgram = do
   insts <- parseInstruction `P.endBy` P.newline
-  return $ Program (V.fromList insts)
+  return $ mkProgram insts
 
 parseInput :: String -> Program
 parseInput input =
@@ -74,13 +91,14 @@ parseInput input =
     Right program -> program
     Left err -> error $ show err
 
-findLoop :: Eq a => [a] -> (Integer, Integer)
+findLoop :: Eq a => [a] -> Maybe (Integer, Integer)
 findLoop [] = error "Empty list"
 findLoop as = go as (L.tail as)
   where
+    go _ [] = Nothing
     go (t : ts) (h : hs) =
       if t == h
-        then findStart as hs 0
+        then Just $ findStart as hs 0
         else go ts (L.tail hs)
     findStart (t : ts) (h : hs) n =
       if t == h
@@ -91,10 +109,31 @@ findLoop as = go as (L.tail as)
         then n
         else findLength t hs (n + 1)
 
+buildVariations :: Program -> [Program]
+buildVariations (Program insts) = map mkProgram $ go (V.toList insts)
+  where
+    go [] = [[]]
+    go (inst@Instruction {iOpCode = opCode} : insts) = do
+      case opCode of
+        ACC -> (inst :) <$> go insts
+        NOP -> ((inst :) <$> go insts) ++ [inst {iOpCode = JMP} : insts]
+        JMP -> ((inst :) <$> go insts) ++ [inst {iOpCode = NOP} : insts]
+
+findCompleteRun :: [[Computer]] -> [Computer]
+findCompleteRun [] = error "No good run"
+findCompleteRun (r : rs) =
+  case findLoop $ cIp <$> r of
+    Just _ -> findCompleteRun rs
+    Nothing -> r
+
 day8 :: IO ()
 day8 = do
   prg <- parseInput <$> loadInput
   let computer = mkComputer prg
-      executionRun = iterate runStep computer
-      (start, period) = findLoop $ cIp <$> executionRun
+      executionRun = iterateMaybe runStepMaybe computer
+      Just (start, period) = findLoop $ cIp <$> executionRun
   print $ L.head . L.genericDrop (start + period) $ cAcc <$> executionRun
+  let prgs = buildVariations prg
+      computers = mkComputer <$> prgs
+      executionRuns = iterateMaybe runStepMaybe <$> computers
+  print $ cAcc . L.last $ findCompleteRun executionRuns
