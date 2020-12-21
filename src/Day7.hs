@@ -57,15 +57,18 @@ parseInput input =
     Left err -> error $ show err
 
 isContainedInMap :: [Rule] -> M.Map Bag [Bag]
-isContainedInMap = go M.empty
+isContainedInMap = foldr processRule M.empty
   where
-    go map [] = map
-    go map (r : rs) = go (updateMap r map) rs
-    updateMap Rule {rBag = bigBag, rContents = contents} map =
-      foldl (updateContent bigBag) map contents
-    updateContent bigBag map (_, smallBag) = M.alter (setOrInsert bigBag) smallBag map
-    setOrInsert bigBag Nothing = Just [bigBag]
-    setOrInsert bigBag (Just rest) = Just (bigBag : rest)
+    processRule :: Rule -> M.Map Bag [Bag] -> M.Map Bag [Bag]
+    processRule Rule {rBag = bigBag, rContents = contents} map =
+      foldr (processContent bigBag) map contents
+    processContent :: Bag -> (Integer, Bag) -> M.Map Bag [Bag] -> M.Map Bag [Bag]
+    processContent bigBag (_, smallBag) map = M.alter (setOrInsert bigBag) smallBag map
+    setOrInsert :: Bag -> Maybe [Bag] -> Maybe [Bag]
+    setOrInsert bigBag curr =
+      case curr of
+        Just rest -> Just (bigBag : rest)
+        Nothing -> Just [bigBag]
 
 findBags :: M.Map Bag [Bag] -> Bag -> [Bag]
 findBags isContainedIn bag =
