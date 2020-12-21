@@ -80,16 +80,16 @@ findLoop as = go as (L.tail as)
   where
     go (t : ts) (h : hs) =
       if t == h
-        then go2 as hs 0
+        then findStart as hs 0
         else go ts (L.tail hs)
-    go2 (t : ts) (h : hs) n =
+    findStart (t : ts) (h : hs) n =
       if t == h
-        then (n, go3 t hs 1)
-        else go2 ts hs (n + 1)
-    go3 t (h : hs) n =
+        then (n, findLength t hs 1)
+        else findStart ts hs (n + 1)
+    findLength t (h : hs) n =
       if t == h
         then n
-        else go3 t hs (n + 1)
+        else findLength t hs (n + 1)
 
 day8 :: IO ()
 day8 = do
