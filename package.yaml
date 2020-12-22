@@ -166,6 +166,19 @@ executables:
     - aoc20
     other-modules:
     - Paths_aoc20
+  day10:
+    main:                Day10Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is Day10Main
+    - -O2
+    dependencies:
+    - aoc20
+    other-modules:
+    - Paths_aoc20
 
 tests:
   aoc20-test:
