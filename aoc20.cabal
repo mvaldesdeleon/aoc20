@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a61741cd90dd534817b5b19f304e77385829599bd5411a4c6f1099c7821c4919
+-- hash: 999605cfcf661a1841bcc77f6979cf6d407ccbfb1781591d057356fa48e99ede
 
 name:           aoc20
 version:        0.1.0.0
@@ -24,6 +24,7 @@ data-files:
     inputs/day-1.txt
     inputs/day-10.txt
     inputs/day-11.txt
+    inputs/day-12.txt
     inputs/day-2.txt
     inputs/day-3.txt
     inputs/day-4.txt
@@ -42,6 +43,7 @@ library
       Day1
       Day10
       Day11
+      Day12
       Day2
       Day3
       Day4
@@ -122,6 +124,28 @@ executable day11
   hs-source-dirs:
       app
   ghc-options: -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -main-is Day11Main -O2
+  build-depends:
+      ListZipper
+    , ansi-terminal
+    , aoc20
+    , base >=4.7 && <5
+    , containers
+    , lens
+    , listsafe
+    , monad-loops
+    , mtl
+    , parsec
+    , split
+    , vector
+  default-language: Haskell2010
+
+executable day12
+  main-is: Day12Main.hs
+  other-modules:
+      Paths_aoc20
+  hs-source-dirs:
+      app
+  ghc-options: -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -main-is Day12Main -O2
   build-depends:
       ListZipper
     , ansi-terminal
