@@ -1,4 +1,4 @@
-module Day9 where
+module Day9Main where
 
 import Day9 (day9)
 
