@@ -4,6 +4,7 @@ module Day9
 where
 
 import qualified Data.List as L
+import qualified Data.Vector as V
 import Paths_aoc20 (getDataFileName)
 
 data XMAS = XMAS
@@ -45,9 +46,23 @@ loadInput = getDataFileName "inputs/day-9.txt" >>= readFile
 parseInput :: String -> [Integer]
 parseInput = map read . words
 
+findWeakness :: Integer -> [Integer] -> Integer
+findWeakness target raw = go 0 2
+  where
+    sums = V.fromList $ L.scanl (+) 0 raw
+    go start end =
+      let sum = sums V.! end - sums V.! start
+       in case compare sum target of
+            EQ -> compute $ L.take (end - start) . L.drop start $ raw
+            LT -> go start (end + 1)
+            GT -> go (start + 1) (start + 3)
+    compute range = maximum range + minimum range
+
 day9 :: IO ()
 day9 = do
   raw <- parseInput <$> loadInput
   let xmas = mkXMAS 25 raw
       xs = iterateMaybe next xmas
-  print $ L.head . xData . L.head $ L.dropWhile isValid xs
+      firstInvalid = L.head . xData . L.head $ L.dropWhile isValid xs
+  print $ firstInvalid
+  print $ findWeakness firstInvalid raw
